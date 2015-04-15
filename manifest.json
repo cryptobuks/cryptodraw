@@ -3,20 +3,28 @@
 
   "name": "CryptoDraw",
   "author": "Lining Wang",
-  "description": "uploading, storing, and recopying creations",
-  "version": "0.1",
-  "version_name": "halcyon",
-  // "default_locale": "en",
-
-  "browser_action": {
-    "default_icon": "icon.png",
-    "default_popup": "popup.html",
-    "default_title": "CryptoDraw notifications"
+  "description": "crypto framework against digital art plagiarism",
+  "version": "0.14",
+  "version_name": "0.1",
+  "background": {
+    "scripts": ["background.js"]
   },
+
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvZG7R/K2rLPrD6beg5Hskx2y1eXmthbwM7xD+lQcjDUWZ6kEbeUhCV1P3bjvmY7rYFzIHxtkxejQ7D1O7pu1WIEjBRjtm4T5+LiSEED5pCY0jimrAXHCDcn2D6a3wz7UZxpg7dK3gP/k4s9ZYVNwxrogaTG/FCXwgUj28ntw0zj4aa2ZV90b1wYcswiqTH2raMuGUp/JnNS9TwPVbb05SKVa7heMHfVeCb+IvW16HkN3j4iH/HmkabVQdpe6OrNAHwuu310XFtCAvFoX9okOoHiqxAJ9Mj/LxyiaVzazM1nEy20Ie3475HQmgt6Jg00IDK+3RvH6SgAiasEpx0x+gQIDAQAB",
 
   "permissions": [
     "activeTab",
     "storage",
-    "https://ajax.googleapis.com/"
-  ]
+    "identity",
+    "https://ajax.googleapis.com/",
+    "http://deviantart.com/*",
+    "http://tumblr.com/*"
+  ],
+  "oauth2": {
+    "client_id": "340048863020-cr2obah665dctq26l7j97qn21c018j0v.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/drive"
+    ]
+  }
 }
