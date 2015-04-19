@@ -22,24 +22,12 @@ chrome.identity.getAuthToken({
 //   function(redirect_url) { /* Extract token from redirect_url */ });
 
 //===================================================================
-
-// testing img tags from dom to display buttons later
-document.addEventListener('DOMContentLoaded', function () {
-  var imgs = document.images;
-  for (var i = 0; i < imgs.length; i++) {
-    console.log("image url", imgs[i].src);
-  }
-});
-
-//===================================================================
 // context menues for uploading
 
 function getClickHandler() {
   return function(info, tab) {
-
     // The srcUrl property is only available for image elements.
     var url = 'upload.html#' + info.srcUrl;
-
     // Create a new window to the info page.
     chrome.windows.create({ url: url, width: 200, height: 200 });
   };
@@ -57,31 +45,28 @@ chrome.contextMenus.create({
 
 function getRandomToken() {
     // source: http://stackoverflow.com/questions/23822170/getting-unique-clientid-from-chrome-extension
-    // E.g. 8 * 32 = 256 bits token
-    //
     var randomPool = new Uint8Array(32);
     crypto.getRandomValues(randomPool);
     var hex = '';
     for (var i = 0; i < randomPool.length; ++i) {
         hex += randomPool[i].toString(16);
     }
-    // E.g. db18458e2782b2b77e36769c569e263a53885a9944dd0a861e5064eac16f1a
     return hex;
 }
 
 chrome.runtime.onInstalled.addListener(function(details){
+    console.log("in this function");
     if(details.reason == "install"){
         console.log("This is a first install!");
 
         userid = getRandomToken();
 
-        var password = prompt("Please enter a passphrase for encrypting your data", "");
-        chrome.storage.sync.set({userid: userid}, function() {
-            useToken(userid, password);
-        });
+        var password = prompt("Please enter a passphrase for your pgp key", "");
+        useToken(userid, password);
 
         function useToken(userid, password) {
-            var openpgp = window.openpgp;
+            console.log("asdf");
+            var openpgp = require('openpgp');
 
             var options = {
                 numBits: 2048,
@@ -91,8 +76,15 @@ chrome.runtime.onInstalled.addListener(function(details){
 
             openpgp.generateKeyPair(options).then(function(keypair) {
                 // success
-                var privkey = keypair.privateKeyArmored;
-                var pubkey = keypair.publicKeyArmored;
+                var obj1 = {};
+                var obj2 = {};
+
+                obj1[privkey] = keypair.privateKeyArmored;
+                obj2[pubkey] = keypair.publicKeyArmored;
+
+                chrome.storage.local.set(obj1);
+                chrome.storage.sync.set(obj2);
+
             }).catch(function(error) {
                 console.log("key generation failed")
             });
