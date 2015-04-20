@@ -1,4 +1,5 @@
 // sign into google account?
+
 chrome.identity.getAuthToken({
     interactive: true
 }, function(token) {
@@ -9,10 +10,22 @@ chrome.identity.getAuthToken({
     var x = new XMLHttpRequest();
     x.open('GET', 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=' + token);
     x.onload = function() {
-        alert(x.response);
+        // alert(x.response);
     };
     x.send();
 });
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.method == "getKey") {
+      console.log("pls");
+      sendResponse({status: localStorage['pubkey']});
+    }
+    else
+      sendResponse({}); // snub them.
+});
+
+
+    //+ chrome.storage.sync['pubkey'].toString();
 
 //===================================================================
 // TODO: add authentication methods for higher trust
@@ -27,7 +40,7 @@ chrome.identity.getAuthToken({
 function getClickHandler() {
   return function(info, tab) {
     // The srcUrl property is only available for image elements.
-    var url = 'upload.html#' + info.srcUrl;
+    var url = '../pages/upload.html#' + info.srcUrl;
     // Create a new window to the info page.
     chrome.windows.create({ url: url, width: 200, height: 200 });
   };
@@ -39,6 +52,20 @@ chrome.contextMenus.create({
   "contexts" : ["image"],
   "onclick" : getClickHandler()
 });
+
+// testing img tags from dom to display buttons later
+// $(document).ready(function () {
+//   console.log("PLS");
+//   var images = document.getElementsByTagName('img');
+//   var length = images.length;
+//   console.log("length", length);
+//   for (var i = 0; i < length; i++) {
+//     console.log("image url", images[i].src);
+//     console.log("width", images[i].width);
+//     console.log("height", images[i].height);
+//   }
+// });
+
 
 //===================================================================
 // generate fresh pgp keypair at first install (user authentication)
@@ -55,19 +82,16 @@ function getRandomToken() {
 }
 
 chrome.runtime.onInstalled.addListener(function(details){
-    console.log("in this function");
     if(details.reason == "install"){
-        console.log("This is a first install!");
-
-        userid = getRandomToken();
-
-        var password = prompt("Please enter a passphrase for your pgp key", "");
+        var userid = getRandomToken().toString();
+        var password = prompt("Please enter a passphrase for your pgp key", "").toString();
         useToken(userid, password);
 
         function useToken(userid, password) {
             console.log("asdf");
-            var openpgp = require('openpgp');
+            var openpgp = window.openpgp;
 
+            console.log("asdf?", userid, password);
             var options = {
                 numBits: 2048,
                 userId: userid,
@@ -79,14 +103,14 @@ chrome.runtime.onInstalled.addListener(function(details){
                 var obj1 = {};
                 var obj2 = {};
 
-                obj1[privkey] = keypair.privateKeyArmored;
-                obj2[pubkey] = keypair.publicKeyArmored;
+                obj1['privkey'] = keypair.privateKeyArmored;
+                obj2['pubkey'] = keypair.publicKeyArmored;
 
                 chrome.storage.local.set(obj1);
                 chrome.storage.sync.set(obj2);
 
             }).catch(function(error) {
-                console.log("key generation failed")
+                console.log("key generation failed", error)
             });
         }
     }
