@@ -9,7 +9,7 @@
   "version_name": "0.1",
 
   "background": {
-    "scripts": ["bower_components/jquery/dist/jquery.min.js", "bower_components/openpgp/dist/openpgp.min.js","scripts/background.js"]
+    //"scripts": ["bower_components/jquery/dist/jquery.min.js", "bower_components/openpgp/dist/openpgp.min.js","scripts/background.js"]
     // "persistent": false
   },
 
